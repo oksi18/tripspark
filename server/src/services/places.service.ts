@@ -1,24 +1,48 @@
 import { pool } from "../db/pool";
 import { Place } from "../types";
 
-export async function getAllPlaces(city?: string): Promise<Place[]> {
-  if (city) {
-    const result = await pool.query<Place>(
-      "SELECT * FROM places WHERE LOWER(city) = LOWER($1) ORDER BY popularity DESC",
-      [city]
-    );
-    return result.rows;
-  }
+export interface PlaceWithInterests extends Place {
+  interests: string[];
+}
 
-  const result = await pool.query<Place>(
-    "SELECT * FROM places ORDER BY popularity DESC"
-  );
+export async function getAllPlaces(city?: string): Promise<PlaceWithInterests[]> {
+  const baseQuery = `
+    SELECT
+      p.*,
+      COALESCE(
+        ARRAY_AGG(i.name) FILTER (WHERE i.name IS NOT NULL),
+        '{}'
+      ) AS interests
+    FROM places p
+    LEFT JOIN place_interests pi ON pi.place_id = p.id
+    LEFT JOIN interests i ON i.id = pi.interest_id
+    ${city ? "WHERE LOWER(p.city) = LOWER($1)" : ""}
+    GROUP BY p.id
+    ORDER BY p.popularity DESC
+  `;
+
+  const result = city
+    ? await pool.query<PlaceWithInterests>(baseQuery, [city])
+    : await pool.query<PlaceWithInterests>(baseQuery);
+
   return result.rows;
 }
 
-export async function getPlaceById(id: number): Promise<Place | null> {
-  const result = await pool.query<Place>(
-    "SELECT * FROM places WHERE id = $1",
+export async function getPlaceById(id: number): Promise<PlaceWithInterests | null> {
+  const result = await pool.query<PlaceWithInterests>(
+    `
+    SELECT
+      p.*,
+      COALESCE(
+        ARRAY_AGG(i.name) FILTER (WHERE i.name IS NOT NULL),
+        '{}'
+      ) AS interests
+    FROM places p
+    LEFT JOIN place_interests pi ON pi.place_id = p.id
+    LEFT JOIN interests i ON i.id = pi.interest_id
+    WHERE p.id = $1
+    GROUP BY p.id
+    `,
     [id]
   );
   return result.rows[0] ?? null;

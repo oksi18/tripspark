@@ -11,6 +11,10 @@ export interface Place {
   avg_visit_minutes: number;
 }
 
+export interface PlaceWithInterests extends Place {
+  interests: string[];
+}
+
 export interface Interest {
   id: number;
   name: string;
