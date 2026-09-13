@@ -19,3 +19,23 @@ export interface Interest {
   id: number;
   name: string;
 }
+
+export type Intensity = "relaxed" | "moderate" | "packed";
+
+export interface UserPreferences {
+  city: string;
+  days: number;
+  budget: number; // 1-3
+  interests: string[];
+  intensity: Intensity;
+}
+
+export interface ScoredPlace extends PlaceWithInterests {
+  score: number;
+  scoreBreakdown: {
+    interestMatch: number;
+    budgetFit: number;
+    popularityNorm: number;
+    intensityFit: number;
+  };
+}

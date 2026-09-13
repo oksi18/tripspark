@@ -3,8 +3,16 @@ import cors from "cors";
 import { pool } from "./db/pool";
 import placesRoutes = require("./routes/places.routes");
 import interestsRoutes = require("./routes/interests.routes");
+import recommendationsRoutes from "./routes/recommendations.routes";
 
 const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", message: "TripSpark backend is running" });
+});
 
 app.use(cors());
 app.use(express.json());
@@ -27,6 +35,9 @@ app.get("/api/db-test", async (req, res) => {
 });
 
 app.use("/api/places", placesRoutes);
-app.use("/api/interests", interestsRoutes)
+app.use("/api/interests", interestsRoutes);
+app.use("/api/places", placesRoutes);
+app.use("/api/interests", interestsRoutes);
+app.use("/api/recommendations", recommendationsRoutes);
 
 export default app;
