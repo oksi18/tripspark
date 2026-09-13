@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { pool } from "./db/pool";
+import placesRoutes = require("./routes/places.routes");
+import interestsRoutes = require("./routes/interests.routes");
 
 const app = express();
 
@@ -23,5 +25,8 @@ app.get("/api/db-test", async (req, res) => {
   });
 }
 });
+
+app.use("/api/places", placesRoutes);
+app.use("/api/interests", interestsRoutes)
 
 export default app;
