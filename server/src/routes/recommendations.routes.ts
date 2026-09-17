@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { getAllPlaces } from "../services/places.service";
 import { scoreAndRankPlaces } from "../services/scoring.service";
+import { buildRoute } from "../services/route.service";
 import { UserPreferences, Intensity } from "../types";
 
 const router = Router();
@@ -42,11 +43,13 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     const rankedPlaces = scoreAndRankPlaces(places, prefs);
+    const route = buildRoute(rankedPlaces, prefs);
 
     res.json({
       preferences: prefs,
       totalPlacesConsidered: rankedPlaces.length,
-      rankedPlaces,
+      route: route.days,
+      unusedTopPlaces: route.unusedPlaces.slice(0, 5), // just show a few for reference
     });
   } catch (err) {
     console.error(err);
