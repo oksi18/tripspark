@@ -35,7 +35,7 @@ function App() {
 
       {isLoading && <p style={{ marginTop: "1rem" }}>Generating your personalized route...</p>}
 
-      {result && <RouteResult route={result.route} />}
+      {result && <RouteResult route={result.route} aiDescription={result.aiDescription} />}
     </div>
   );
 }

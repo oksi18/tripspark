@@ -39,4 +39,5 @@ export interface RecommendationsResponse {
   totalPlacesConsidered: number;
   route: DayPlan[];
   unusedTopPlaces: ScoredPlace[];
+  aiDescription: string;
 }
