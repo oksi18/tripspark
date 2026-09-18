@@ -3,6 +3,7 @@ import PreferenceForm from "./components/PreferenceForm";
 import RouteResult from "./components/RouteResult";
 import { fetchRecommendations } from "./api/client";
 import type { UserPreferences, RecommendationsResponse } from "./types";
+import { CompassIcon, AlertIcon } from "./components/icons";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,15 +26,34 @@ function App() {
   }
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>TripSpark</h1>
-      <p style={{ color: "#666" }}>Personalized tourist route planner</p>
+    <div className="container">
+      <header className="hero">
+        <div className="hero-eyebrow">
+          <CompassIcon size={16} />
+          Personalized trip planning
+        </div>
+        <h1>Your next trip, planned around you.</h1>
+        <p>
+          Tell TripSpark where you're headed, what you love, and how you like to move —
+          we'll turn it into a day-by-day route worth following.
+        </p>
+      </header>
 
       <PreferenceForm onSubmit={handleSubmit} isLoading={isLoading} />
 
-      {error && <p style={{ color: "red", marginTop: "1rem" }}>Error: {error}</p>}
+      {isLoading && (
+        <div className="loading-row">
+          <span className="spinner" style={{ borderTopColor: "var(--color-teal)", borderColor: "rgba(47,122,111,0.25)" }} />
+          Matching places to your preferences...
+        </div>
+      )}
 
-      {isLoading && <p style={{ marginTop: "1rem" }}>Generating your personalized route...</p>}
+      {error && (
+        <div className="top-error">
+          <AlertIcon />
+          {error}
+        </div>
+      )}
 
       {result && <RouteResult route={result.route} aiDescription={result.aiDescription} />}
     </div>

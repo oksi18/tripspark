@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { DayPlan } from "../types";
+import type  { DayPlan } from "../types";
 import PlaceCard from "./PlaceCard";
+import { SparkIcon } from "./icons";
 
 interface RouteResultProps {
   route: DayPlan[];
@@ -13,35 +14,24 @@ function RouteResult({ route, aiDescription }: RouteResultProps) {
   const currentDayPlan = route.find((d) => d.day === activeDay);
 
   return (
-    <div style={{ marginTop: "2rem", maxWidth: 600 }}>
-      <h2>Your Route</h2>
+    <section className="results-section">
+      <div className="results-header">
+        <h2>Your route</h2>
+      </div>
 
       {aiDescription && (
-        <p
-          style={{
-            fontStyle: "italic",
-            background: "#eef6ff",
-            padding: "0.75rem",
-            borderRadius: "6px",
-          }}
-        >
-          {aiDescription}
-        </p>
+        <div className="ai-summary">
+          <SparkIcon />
+          <span>{aiDescription}</span>
+        </div>
       )}
 
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+      <div className="day-tabs">
         {route.map((dayPlan) => (
           <button
             key={dayPlan.day}
+            className={`day-tab ${activeDay === dayPlan.day ? "active" : ""}`}
             onClick={() => setActiveDay(dayPlan.day)}
-            style={{
-              padding: "0.5rem 1rem",
-              background: activeDay === dayPlan.day ? "#333" : "#eee",
-              color: activeDay === dayPlan.day ? "#fff" : "#000",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
           >
             Day {dayPlan.day}
           </button>
@@ -49,13 +39,19 @@ function RouteResult({ route, aiDescription }: RouteResultProps) {
       </div>
 
       {currentDayPlan && currentDayPlan.places.length === 0 && (
-        <p>No places available for this day (not enough matching places found).</p>
+        <div className="empty-day">
+          No places matched for this day — try adjusting your interests or budget.
+        </div>
       )}
 
-      {currentDayPlan?.places.map((place) => (
-        <PlaceCard key={place.id} place={place} />
-      ))}
-    </div>
+      {currentDayPlan && currentDayPlan.places.length > 0 && (
+        <div className="place-list">
+          {currentDayPlan.places.map((place) => (
+            <PlaceCard key={place.id} place={place} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
